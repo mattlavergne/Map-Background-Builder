@@ -96,22 +96,8 @@ const state = {
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => Array.from(document.querySelectorAll(s));
 
-/* On-screen diagnostic log (visible bottom-right). Also logs to console.
-   Lets us see exactly where things stall without opening DevTools. */
-function dbg(msg) {
-  const line = new Date().toLocaleTimeString() + '  ' + msg;
-  try { console.log('[cartogram] ' + msg); } catch (_) {}
-  const el = document.getElementById('debug-log');
-  if (el) {
-    el.hidden = false;
-    const div = document.createElement('div');
-    div.textContent = line;
-    el.insertBefore(div, el.firstChild);
-    while (el.childElementCount > 14) el.removeChild(el.lastChild);
-  }
-}
-window.addEventListener('error', (e) => dbg('JS ERROR: ' + (e.message || e.error)));
-window.addEventListener('unhandledrejection', (e) => dbg('PROMISE REJECT: ' + (e.reason && (e.reason.message || e.reason))));
+/* Lightweight console-only diagnostics (invisible to users). */
+function dbg(msg) { try { console.log('[cartogram] ' + msg); } catch (_) {} }
 
 /* ==================================================================
    MAP SETUP

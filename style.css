@@ -305,14 +305,6 @@ button { font-family: inherit; cursor: pointer; }
   font-size: 10px; color: rgba(255,255,255,.35); pointer-events: none;
   font-family: monospace; letter-spacing: .02em;
 }
-#debug-log {
-  position: fixed; right: 8px; bottom: 8px; z-index: 3000;
-  width: min(440px, 46vw); max-height: 42vh; overflow-y: auto;
-  background: rgba(6,8,13,.92); border: 1px solid #2e3648; border-radius: 8px;
-  padding: 8px 10px; font-family: monospace; font-size: 11px; line-height: 1.5;
-  color: #9fe6d4; box-shadow: 0 10px 30px rgba(0,0,0,.5);
-}
-#debug-log div { white-space: pre-wrap; word-break: break-word; border-bottom: 1px solid rgba(255,255,255,.05); padding: 1px 0; }
 .loader-bar { position: relative; margin-top: 18px; height: 5px; border-radius: 5px; background: var(--panel-2); overflow: hidden; }
 .loader-bar i {
   display: block; height: 100%; width: 0%;
