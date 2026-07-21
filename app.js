@@ -152,10 +152,11 @@ const ROAD_TIER = {
   service: 3,
   footway: 4, path: 4, pedestrian: 4, cycleway: 4, track: 4, steps: 4, bridleway: 4,
 };
-const TIER_WIDTH = [3.6, 2.3, 1.5, 1.05, 0.9];
-// Absolute minimum pixel widths so roads never render sub-pixel (which makes
-// thin lines look broken or disappear) at low resolutions or large areas.
-const MIN_WIDTH = [2.0, 1.5, 1.15, 1.0, 0.9];
+const TIER_WIDTH = [3.8, 2.4, 1.6, 1.2, 1.05];
+// Absolute minimum pixel widths. Kept comfortably above 1px so even thin,
+// diagonal roads have a solid opaque core instead of an anti-aliased smear
+// that fades into the background.
+const MIN_WIDTH = [2.2, 1.7, 1.45, 1.35, 1.25];
 
 /* ------------------------------------------------------------------
    STATE
@@ -754,10 +755,11 @@ function strokePath(ctx, geom, S) {
 }
 
 function applyVignette(ctx, w, h, theme) {
-  // Gentle vignette so the artwork reads as a calm background, not a spotlight.
-  const g = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.42, w / 2, h / 2, Math.max(w, h) * 0.78);
+  // Very gentle vignette — light enough that it never dims the roads near
+  // the edges into looking faded.
+  const g = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.5, w / 2, h / 2, Math.max(w, h) * 0.82);
   g.addColorStop(0, 'rgba(0,0,0,0)');
-  g.addColorStop(1, theme.glow > 0 ? 'rgba(0,0,0,0.22)' : 'rgba(0,0,0,0.08)');
+  g.addColorStop(1, theme.glow > 0 ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.05)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, w, h);
 }
