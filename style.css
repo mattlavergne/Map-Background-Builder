@@ -294,12 +294,25 @@ button { font-family: inherit; cursor: pointer; }
 @keyframes bounce { 0%,100% { transform: translateY(0); opacity: .5; } 50% { transform: translateY(-10px); opacity: 1; } }
 .loader-title { font-size: 16px; font-weight: 700; }
 .loader-sub { font-size: 12.5px; color: var(--text-dim); margin-top: 5px; }
-.loader-bar { margin-top: 18px; height: 5px; border-radius: 5px; background: var(--panel-2); overflow: hidden; }
+.loader-bar { position: relative; margin-top: 18px; height: 5px; border-radius: 5px; background: var(--panel-2); overflow: hidden; }
 .loader-bar i {
   display: block; height: 100%; width: 0%;
   background: linear-gradient(120deg, var(--accent), var(--accent-2));
   border-radius: 5px; transition: width .4s ease;
 }
+/* constant motion so the bar never reads as frozen during a long fetch */
+.loader-bar::after {
+  content: ''; position: absolute; top: 0; left: -40%; height: 100%; width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+  animation: loaderSlide 1.4s ease-in-out infinite;
+}
+@keyframes loaderSlide { to { left: 120%; } }
+.loader-cancel {
+  margin-top: 18px; width: 100%; padding: 9px;
+  background: transparent; border: 1px solid var(--line-2); border-radius: 9px;
+  color: var(--text-dim); font-size: 13px; font-weight: 600; transition: all .15s;
+}
+.loader-cancel:hover { color: var(--text); border-color: #f97066; }
 
 /* ===================== TOAST ===================== */
 .toast {

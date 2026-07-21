@@ -88,6 +88,7 @@ const state = {
   bounds: null,        // leaflet LatLngBounds of selection
   theme: 'midnight',
   data: null,          // parsed OSM elements for current render
+  abort: null,         // AbortController for the in-flight fetch
   placeName: '',
   text: { pos: 'none', color: 'auto', font: 'Fraunces', title: '', sub: '' },
 };
@@ -269,23 +270,47 @@ function buildQuery(b, wantBuildings, wantGreen) {
   return `[out:json][timeout:60];(${parts.join('')});out geom;`;
 }
 
-async function fetchOSM(query, onProgress) {
+/* fetch with a per-request timeout, honouring an external cancel signal. */
+function fetchWithTimeout(url, opts, ms, signal) {
+  const ctrl = new AbortController();
+  const onAbort = () => ctrl.abort();
+  if (signal) {
+    if (signal.aborted) ctrl.abort();
+    else signal.addEventListener('abort', onAbort);
+  }
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => {
+    clearTimeout(timer);
+    if (signal) signal.removeEventListener('abort', onAbort);
+  });
+}
+
+const CANCELLED = '__cancelled__';
+
+async function fetchOSM(query, onProgress, signal) {
   let lastErr;
   for (let i = 0; i < OVERPASS_ENDPOINTS.length; i++) {
+    // If the user hit Cancel, stop immediately.
+    if (signal && signal.aborted) throw new Error(CANCELLED);
     try {
-      onProgress && onProgress(0.15 + i * 0.05, 'Contacting map server' + (i ? ' (mirror ' + i + ')' : '') + '…');
-      const res = await fetch(OVERPASS_ENDPOINTS[i], {
+      onProgress && onProgress(0.15 + i * 0.08,
+        i ? `Server was busy — trying mirror ${i}…` : 'Contacting map server…');
+      const res = await fetchWithTimeout(OVERPASS_ENDPOINTS[i], {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'data=' + encodeURIComponent(query),
-      });
+      }, 40000, signal);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       onProgress && onProgress(0.55, 'Downloading streets & water…');
       const json = await res.json();
       return json.elements || [];
-    } catch (err) { lastErr = err; }
+    } catch (err) {
+      // A user cancel aborts the shared signal; a per-request timeout does not.
+      if (signal && signal.aborted) throw new Error(CANCELLED);
+      lastErr = err;
+    }
   }
-  throw lastErr || new Error('All map servers unavailable');
+  throw lastErr || new Error('busy');
 }
 
 /* ==================================================================
@@ -304,6 +329,7 @@ async function generate() {
     toast('Large area — buildings skipped to keep it fast.');
   }
 
+  state.abort = new AbortController();
   showLoader(true);
   setLoader(0.05, 'Gathering the streets…', 'Reading OpenStreetMap');
 
@@ -311,7 +337,7 @@ async function generate() {
     // Fetch a little beyond the drawn box so the cover-crop always has data.
     const fetchB = expandBounds(state.bounds, 0.10);
     const q = buildQuery(fetchB, wantBuildings, wantGreen);
-    const elements = await fetchOSM(q, setLoaderP);
+    const elements = await fetchOSM(q, setLoaderP, state.abort.signal);
     if (!elements.length) throw new Error('No map features found here. Try a populated area or a bigger box.');
 
     setLoader(0.7, 'Painting your artwork…', 'Rendering vectors');
@@ -334,10 +360,21 @@ async function generate() {
     render();
   } catch (err) {
     console.error(err);
-    toast(err.message || 'Something went wrong.', true);
+    if (err.message === CANCELLED) {
+      toast('Generation cancelled.');
+    } else if (err.message === 'busy' || /HTTP (4|5)\d\d/.test(err.message)) {
+      toast('The map servers are busy or the area is too large. Try a smaller box or retry in a moment.', true);
+    } else {
+      toast(err.message || 'Something went wrong.', true);
+    }
   } finally {
+    state.abort = null;
     showLoader(false);
   }
+}
+
+function cancelGenerate() {
+  if (state.abort) state.abort.abort();
 }
 
 function classify(elements) {
@@ -694,6 +731,7 @@ function selectTheme(key) {
 function bindUI() {
   $('#draw-btn').onclick = toggleDraw;
   $('#generate-btn').onclick = generate;
+  $('#loader-cancel').onclick = cancelGenerate;
   $('#search-input').oninput = onSearchInput;
   $('#search-form').onsubmit = (e) => { e.preventDefault(); const q = $('#search-input').value.trim(); if (q) runSearch(q); };
   document.addEventListener('click', (e) => {
