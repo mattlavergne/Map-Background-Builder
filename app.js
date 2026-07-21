@@ -402,7 +402,8 @@ function fetchWithTimeout(url, opts, ms, signal) {
 
 const CANCELLED = '__cancelled__';
 
-async function fetchOSM(query, onProgress, signal) {
+async function fetchOSM(query, onProgress, signal, reqTimeout) {
+  reqTimeout = reqTimeout || 12000;
   let lastErr;
   for (let i = 0; i < OVERPASS_ENDPOINTS.length; i++) {
     // If the user hit Cancel, stop immediately.
@@ -410,16 +411,16 @@ async function fetchOSM(query, onProgress, signal) {
     try {
       onProgress && onProgress(0.15 + i * 0.08,
         i ? `Server was busy — trying mirror ${i}…` : 'Contacting map server…');
-      dbg('fetch → ' + OVERPASS_ENDPOINTS[i]);
+      dbg('fetch → ' + OVERPASS_ENDPOINTS[i] + ' (timeout ' + reqTimeout + 'ms)');
       const t0 = Date.now();
       const res = await fetchWithTimeout(OVERPASS_ENDPOINTS[i], {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'data=' + encodeURIComponent(query),
-      }, 12000, signal);
+      }, reqTimeout, signal);
       dbg('response ' + res.status + ' in ' + (Date.now() - t0) + 'ms');
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      onProgress && onProgress(0.55, 'Downloading streets & water…');
+      onProgress && onProgress(0.55, 'Downloading map data…');
       const json = await res.json();
       dbg('parsed ' + (json.elements ? json.elements.length : 0) + ' elements');
       return json.elements || [];
@@ -444,27 +445,37 @@ async function generate() {
   let wantBuildings = $('#opt-buildings').checked;
   const wantGreen = $('#opt-green').checked;
 
-  // Very large areas + buildings = enormous downloads. Protect the user.
-  if (area > 90 && wantBuildings) {
+  // Only skip buildings for extreme areas where the download would be huge
+  // and they'd be invisible specks anyway. Otherwise honour the toggle and
+  // give the request the time it needs.
+  if (area > 450 && wantBuildings) {
     wantBuildings = false;
-    toast('Large area — buildings skipped to keep it fast.');
+    toast('Very large area — buildings skipped (too much data to draw meaningfully).');
+  } else if (wantBuildings && area > 70) {
+    toast('Including buildings for a large area — this can take up to a minute.');
   }
+
+  // Building queries over big areas are heavy: scale the per-request timeout
+  // (and the overall watchdog) with the area so we don't abort a slow download.
+  const reqTimeout = wantBuildings
+    ? Math.min(75000, Math.max(20000, Math.round(area * 350)))
+    : 12000;
 
   state.abort = new AbortController();
   showLoader(true);
-  setLoader(0.05, 'Gathering the streets…', 'Reading OpenStreetMap');
+  setLoader(0.05, 'Gathering the streets…', wantBuildings && area > 70 ? 'Large area — please wait' : 'Reading OpenStreetMap');
 
   // Hard watchdog: whatever happens, never spin forever.
   const watchdog = setTimeout(() => {
     if (state.abort) state.abort.abort();
-  }, 75000);
+  }, reqTimeout * OVERPASS_ENDPOINTS.length + 20000);
 
   try {
     // Fetch a little beyond the drawn box so the cover-crop always has data.
     const fetchB = expandBounds(state.bounds, 0.10);
     const q = buildQuery(fetchB, wantBuildings, wantGreen);
-    dbg('query built (' + q.length + ' chars), calling fetchOSM…');
-    const elements = await fetchOSM(q, setLoaderP, state.abort.signal);
+    dbg('query built (' + q.length + ' chars) buildings=' + wantBuildings + ' timeout=' + reqTimeout);
+    const elements = await fetchOSM(q, setLoaderP, state.abort.signal, reqTimeout);
     if (!elements.length) throw new Error('No map features found here. Try a populated area or a bigger box.');
 
     dbg('rendering ' + elements.length + ' elements');
