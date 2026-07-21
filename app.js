@@ -299,7 +299,7 @@ async function fetchOSM(query, onProgress, signal) {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'data=' + encodeURIComponent(query),
-      }, 40000, signal);
+      }, 25000, signal);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       onProgress && onProgress(0.55, 'Downloading streets & water…');
       const json = await res.json();
@@ -362,10 +362,11 @@ async function generate() {
     console.error(err);
     if (err.message === CANCELLED) {
       toast('Generation cancelled.');
-    } else if (err.message === 'busy' || /HTTP (4|5)\d\d/.test(err.message)) {
-      toast('The map servers are busy or the area is too large. Try a smaller box or retry in a moment.', true);
+    } else if (err.message.startsWith('No map features')) {
+      toast(err.message, true);
     } else {
-      toast(err.message || 'Something went wrong.', true);
+      // network error, timeout, busy server, or HTTP error
+      toast('Could not reach the map servers — they may be busy, or the area is too large. Try a smaller box or retry in a moment.', true);
     }
   } finally {
     state.abort = null;
