@@ -129,7 +129,7 @@ const THEMES = {
     green: '#dbe2c9',
     building: 'rgba(60,55,48,.07)', buildingEdge: 'rgba(60,55,48,.22)',
     roof: '#d9cdb6', wall: '#c0b298',
-    roads: ['#2a2622', '#4a443c', '#726a5e', '#9a9184', '#b3a99a'],
+    roads: ['#241f1a', '#3d372e', '#5a5247', '#736a5d', '#8a8072'],
     glow: 0.0, text: '#2a2622',
   },
   vintage: {
@@ -152,7 +152,10 @@ const ROAD_TIER = {
   service: 3,
   footway: 4, path: 4, pedestrian: 4, cycleway: 4, track: 4, steps: 4, bridleway: 4,
 };
-const TIER_WIDTH = [3.4, 2.1, 1.25, 0.75, 0.6];
+const TIER_WIDTH = [3.6, 2.3, 1.5, 1.05, 0.9];
+// Absolute minimum pixel widths so roads never render sub-pixel (which makes
+// thin lines look broken or disappear) at low resolutions or large areas.
+const MIN_WIDTH = [2.0, 1.5, 1.15, 1.0, 0.9];
 
 /* ------------------------------------------------------------------
    STATE
@@ -588,7 +591,7 @@ function render() {
     const p = project(lat, lon);
     return [(p.x - minX) * scale + offX, (p.y - minY) * scale + offY];
   };
-  const lineScale = w / 1920;
+  const lineScale = w / 1600;
 
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
@@ -638,7 +641,7 @@ function render() {
   for (let tier = 4; tier >= 0; tier--) {
     const segs = d.roads[tier];
     if (!segs.length) continue;
-    const width = TIER_WIDTH[tier] * lineScale;
+    const width = Math.max(MIN_WIDTH[tier], TIER_WIDTH[tier] * lineScale);
     // glow pass — tight, subtle halo (capped so no style is overwhelming)
     const g = Math.min(0.6, theme.glow);
     if (glowOn && g > 0 && tier <= 2) {
