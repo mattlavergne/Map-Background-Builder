@@ -238,7 +238,8 @@ button { font-family: inherit; cursor: pointer; }
   animation: pop .4s cubic-bezier(.2,.9,.25,1);
 }
 @keyframes pop { from { transform: scale(.96); opacity: 0; } }
-#art-canvas { display: block; max-width: 100%; max-height: calc(100vh - 80px); width: auto; height: auto; }
+#art-canvas { display: block; max-width: 100%; max-height: calc(100vh - 110px); width: auto; height: auto; }
+.preview-note { margin: 12px 0 0; font-size: 12px; color: var(--text-faint); text-align: center; }
 
 .result-panel {
   background: linear-gradient(180deg, var(--panel), var(--bg-2));
