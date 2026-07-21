@@ -7,11 +7,11 @@
   <meta name="description" content="Draw a box on the map and turn any place on Earth into a stunning, artistic desktop wallpaper." />
 
   <!-- Leaflet map library (vendored locally — no CDN dependency) -->
-  <link rel="stylesheet" href="vendor/leaflet/leaflet.css?v=20260721-5" />
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css?v=20260721-6" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=20260721-5" />
+  <link rel="stylesheet" href="style.css?v=20260721-6" />
 </head>
 <body>
   <!-- ===================== APP SHELL ===================== -->
@@ -188,9 +188,12 @@
   <div id="toast" class="toast" hidden></div>
 
   <!-- build stamp (confirms which version is loaded) -->
-  <div id="build-stamp">build 20260721-5</div>
+  <div id="build-stamp">build 20260721-6</div>
 
-  <script src="vendor/leaflet/leaflet.js?v=20260721-5"></script>
-  <script src="app.js?v=20260721-5"></script>
+  <!-- on-screen diagnostic log -->
+  <div id="debug-log" hidden></div>
+
+  <script src="vendor/leaflet/leaflet.js?v=20260721-6"></script>
+  <script src="app.js?v=20260721-6"></script>
 </body>
 </html>

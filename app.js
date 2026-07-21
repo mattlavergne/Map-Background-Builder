@@ -96,6 +96,23 @@ const state = {
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => Array.from(document.querySelectorAll(s));
 
+/* On-screen diagnostic log (visible bottom-right). Also logs to console.
+   Lets us see exactly where things stall without opening DevTools. */
+function dbg(msg) {
+  const line = new Date().toLocaleTimeString() + '  ' + msg;
+  try { console.log('[cartogram] ' + msg); } catch (_) {}
+  const el = document.getElementById('debug-log');
+  if (el) {
+    el.hidden = false;
+    const div = document.createElement('div');
+    div.textContent = line;
+    el.insertBefore(div, el.firstChild);
+    while (el.childElementCount > 14) el.removeChild(el.lastChild);
+  }
+}
+window.addEventListener('error', (e) => dbg('JS ERROR: ' + (e.message || e.error)));
+window.addEventListener('unhandledrejection', (e) => dbg('PROMISE REJECT: ' + (e.reason && (e.reason.message || e.reason))));
+
 /* ==================================================================
    MAP SETUP
 ================================================================== */
@@ -170,6 +187,7 @@ function onDrawEnd() {
   if (state.drawing) toggleDraw();
   $('#generate-btn').disabled = false;
   updateBadge();
+  dbg('box drawn: ' + boundsKm(b).w.toFixed(1) + '×' + boundsKm(b).h.toFixed(1) + ' km');
 }
 
 /* ==================================================================
@@ -295,16 +313,21 @@ async function fetchOSM(query, onProgress, signal) {
     try {
       onProgress && onProgress(0.15 + i * 0.08,
         i ? `Server was busy — trying mirror ${i}…` : 'Contacting map server…');
+      dbg('fetch → ' + OVERPASS_ENDPOINTS[i]);
+      const t0 = Date.now();
       const res = await fetchWithTimeout(OVERPASS_ENDPOINTS[i], {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'data=' + encodeURIComponent(query),
       }, 12000, signal);
+      dbg('response ' + res.status + ' in ' + (Date.now() - t0) + 'ms');
       if (!res.ok) throw new Error('HTTP ' + res.status);
       onProgress && onProgress(0.55, 'Downloading streets & water…');
       const json = await res.json();
+      dbg('parsed ' + (json.elements ? json.elements.length : 0) + ' elements');
       return json.elements || [];
     } catch (err) {
+      dbg('fetch failed: ' + (err.name || '') + ' ' + (err.message || err));
       // A user cancel aborts the shared signal; a per-request timeout does not.
       if (signal && signal.aborted) throw new Error(CANCELLED);
       lastErr = err;
@@ -317,9 +340,10 @@ async function fetchOSM(query, onProgress, signal) {
    GENERATE
 ================================================================== */
 async function generate() {
-  if (!state.bounds) return;
+  if (!state.bounds) { dbg('generate: no bounds'); return; }
   const km = boundsKm(state.bounds);
   const area = km.w * km.h;
+  dbg('generate start · area ' + area.toFixed(1) + ' km²');
   let wantBuildings = $('#opt-buildings').checked;
   const wantGreen = $('#opt-green').checked;
 
@@ -342,9 +366,11 @@ async function generate() {
     // Fetch a little beyond the drawn box so the cover-crop always has data.
     const fetchB = expandBounds(state.bounds, 0.10);
     const q = buildQuery(fetchB, wantBuildings, wantGreen);
+    dbg('query built (' + q.length + ' chars), calling fetchOSM…');
     const elements = await fetchOSM(q, setLoaderP, state.abort.signal);
     if (!elements.length) throw new Error('No map features found here. Try a populated area or a bigger box.');
 
+    dbg('rendering ' + elements.length + ' elements');
     setLoader(0.7, 'Painting your artwork…', 'Rendering vectors');
     // sort into layers
     state.data = classify(elements);
@@ -837,11 +863,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   // make sure fonts are ready before any canvas text render
   if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (_) {} }
   // Guard each init step so one failure can't take down the rest of the UI.
+  dbg('boot · L=' + typeof L);
   if (typeof L === 'undefined') {
     toast('Map library failed to load. Check your connection and reload.', true);
   } else {
-    try { initMap(); } catch (e) { console.error(e); toast('Map failed to start.', true); }
+    try { initMap(); dbg('map ready'); } catch (e) { dbg('initMap error: ' + e.message); toast('Map failed to start.', true); }
   }
-  try { buildThemeGrid(); } catch (e) { console.error(e); }
-  try { bindUI(); } catch (e) { console.error(e); }
+  try { buildThemeGrid(); } catch (e) { dbg('themeGrid error: ' + e.message); }
+  try { bindUI(); dbg('UI ready — draw a box'); } catch (e) { dbg('bindUI error: ' + e.message); }
 });
