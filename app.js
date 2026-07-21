@@ -606,7 +606,7 @@ function render() {
   if (d.water.length) {
     ctx.save();
     ctx.fillStyle = theme.water;
-    ctx.shadowColor = theme.waterEdge; ctx.shadowBlur = 22 * lineScale;
+    ctx.shadowColor = theme.waterEdge; ctx.shadowBlur = 8 * lineScale;
     for (const geom of d.water) fillPoly(ctx, geom, S);
     ctx.restore();
   }
@@ -615,7 +615,7 @@ function render() {
     ctx.save();
     ctx.strokeStyle = theme.water;
     ctx.lineWidth = 2.4 * lineScale;
-    ctx.shadowColor = theme.waterEdge; ctx.shadowBlur = 10 * lineScale;
+    ctx.shadowColor = theme.waterEdge; ctx.shadowBlur = 4 * lineScale;
     for (const geom of d.waterways) strokePath(ctx, geom, S);
     ctx.restore();
   }
@@ -639,14 +639,15 @@ function render() {
     const segs = d.roads[tier];
     if (!segs.length) continue;
     const width = TIER_WIDTH[tier] * lineScale;
-    // glow pass
-    if (glowOn && theme.glow > 0 && tier <= 2) {
+    // glow pass — tight, subtle halo (capped so no style is overwhelming)
+    const g = Math.min(0.6, theme.glow);
+    if (glowOn && g > 0 && tier <= 2) {
       ctx.save();
       ctx.strokeStyle = theme.roads[tier];
-      ctx.globalAlpha = 0.5 * theme.glow;
-      ctx.lineWidth = width * (2.6 + theme.glow);
+      ctx.globalAlpha = 0.4 * g;
+      ctx.lineWidth = width * (1.5 + g);
       ctx.shadowColor = theme.roads[tier];
-      ctx.shadowBlur = width * (5 + 6 * theme.glow);
+      ctx.shadowBlur = width * (2 + 3 * g);
       for (const geom of segs) strokePath(ctx, geom, S);
       ctx.restore();
     }
@@ -658,7 +659,6 @@ function render() {
 
   // --- finishing touches ---
   applyVignette(ctx, w, h, theme);
-  applyGrain(ctx, w, h);
 
   // --- text overlay ---
   drawText(ctx, w, h, theme);
@@ -751,31 +751,12 @@ function strokePath(ctx, geom, S) {
 }
 
 function applyVignette(ctx, w, h, theme) {
-  const g = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.35, w / 2, h / 2, Math.max(w, h) * 0.75);
+  // Gentle vignette so the artwork reads as a calm background, not a spotlight.
+  const g = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.42, w / 2, h / 2, Math.max(w, h) * 0.78);
   g.addColorStop(0, 'rgba(0,0,0,0)');
-  g.addColorStop(1, theme.glow > 0 ? 'rgba(0,0,0,0.45)' : 'rgba(0,0,0,0.14)');
+  g.addColorStop(1, theme.glow > 0 ? 'rgba(0,0,0,0.22)' : 'rgba(0,0,0,0.08)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, w, h);
-}
-
-/* very light film grain for a premium, non-flat finish */
-function applyGrain(ctx, w, h) {
-  const step = 3;
-  const gw = Math.ceil(w / step), gh = Math.ceil(h / step);
-  const noise = ctx.createImageData(gw, gh);
-  for (let i = 0; i < noise.data.length; i += 4) {
-    const v = (Math.random() * 255) | 0;
-    noise.data[i] = noise.data[i + 1] = noise.data[i + 2] = v;
-    noise.data[i + 3] = 8; // very subtle
-  }
-  const tmp = document.createElement('canvas');
-  tmp.width = gw; tmp.height = gh;
-  tmp.getContext('2d').putImageData(noise, 0, 0);
-  ctx.save();
-  ctx.globalCompositeOperation = 'overlay';
-  ctx.imageSmoothingEnabled = true;
-  ctx.drawImage(tmp, 0, 0, w, h);
-  ctx.restore();
 }
 
 /* ==================================================================
