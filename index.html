@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartogram — Map Artwork Background Builder</title>
+  <meta name="description" content="Draw a box on the map and turn any place on Earth into a stunning, artistic desktop wallpaper." />
+
+  <!-- Leaflet map library -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ===================== APP SHELL ===================== -->
+  <div id="app">
+    <!-- Sidebar / control panel -->
+    <aside class="panel">
+      <header class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="30" height="30">
+            <path d="M4 8l8-3 8 3 8-3v19l-8 3-8-3-8 3V8z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M12 5v19M20 8v19" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".6"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>Cartogram</h1>
+          <p>Turn any place into wall art</p>
+        </div>
+      </header>
+
+      <!-- Step 1: find a place -->
+      <section class="step">
+        <div class="step-label"><span class="num">1</span> Find a place</div>
+        <form id="search-form" class="search" autocomplete="off">
+          <input id="search-input" type="text" placeholder="Search a city, street, landmark…" aria-label="Search location" />
+          <button type="submit" class="search-btn" aria-label="Search">
+            <svg viewBox="0 0 24 24" width="18" height="18"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <ul id="search-results" class="search-results" hidden></ul>
+        </form>
+      </section>
+
+      <!-- Step 2: select an area -->
+      <section class="step">
+        <div class="step-label"><span class="num">2</span> Select an area</div>
+        <button id="draw-btn" class="btn btn-draw">
+          <svg viewBox="0 0 24 24" width="18" height="18"><rect x="3.5" y="6.5" width="17" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="3 2.4"/></svg>
+          <span>Draw selection box</span>
+        </button>
+        <p class="hint" id="select-hint">Click, then drag a box across the map to frame your scene.</p>
+      </section>
+
+      <!-- Step 3: style -->
+      <section class="step">
+        <div class="step-label"><span class="num">3</span> Choose a style</div>
+        <div id="theme-grid" class="theme-grid"><!-- swatches injected by JS --></div>
+
+        <div class="toggles">
+          <label class="toggle">
+            <input type="checkbox" id="opt-buildings" checked />
+            <span class="track"></span>
+            <span class="toggle-label">Buildings</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="opt-green" checked />
+            <span class="track"></span>
+            <span class="toggle-label">Parks &amp; green</span>
+          </label>
+        </div>
+
+        <label class="field">
+          <span class="field-label">Resolution</span>
+          <select id="opt-res">
+            <option value="1920x1080">Full HD · 1920 × 1080</option>
+            <option value="2560x1440" selected>Quad HD · 2560 × 1440</option>
+            <option value="3840x2160">4K · 3840 × 2160</option>
+            <option value="2160x3840">4K Phone · 2160 × 3840</option>
+            <option value="1290x2796">iPhone · 1290 × 2796</option>
+          </select>
+        </label>
+      </section>
+
+      <!-- Generate -->
+      <button id="generate-btn" class="btn btn-primary" disabled>
+        <span class="btn-primary-glow"></span>
+        <span class="label">Generate artwork</span>
+      </button>
+
+      <footer class="panel-foot">
+        Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors
+      </footer>
+    </aside>
+
+    <!-- Map -->
+    <main class="map-wrap">
+      <div id="map"></div>
+      <div class="map-badge" id="map-badge" hidden></div>
+    </main>
+  </div>
+
+  <!-- ===================== RESULT OVERLAY ===================== -->
+  <div id="result" class="result" hidden>
+    <div class="result-stage">
+      <div class="canvas-frame">
+        <canvas id="art-canvas"></canvas>
+      </div>
+    </div>
+
+    <div class="result-panel">
+      <div class="result-head">
+        <h2>Your artwork</h2>
+        <button id="close-result" class="icon-btn" aria-label="Back to map">✕</button>
+      </div>
+
+      <div class="rp-section">
+        <label class="field">
+          <span class="field-label">Title text</span>
+          <input id="txt-title" type="text" placeholder="City name" />
+        </label>
+        <label class="field">
+          <span class="field-label">Subtitle</span>
+          <input id="txt-sub" type="text" placeholder="Coordinates or tagline" />
+        </label>
+      </div>
+
+      <div class="rp-section">
+        <span class="field-label">Text placement</span>
+        <div id="pos-grid" class="pos-grid">
+          <button data-pos="none" class="pos active" title="No text">∅</button>
+          <button data-pos="tl" class="pos" title="Top left">◤</button>
+          <button data-pos="tc" class="pos" title="Top center">▲</button>
+          <button data-pos="tr" class="pos" title="Top right">◥</button>
+          <button data-pos="cl" class="pos" title="Center left">◀</button>
+          <button data-pos="cc" class="pos" title="Center">●</button>
+          <button data-pos="cr" class="pos" title="Center right">▶</button>
+          <button data-pos="bl" class="pos" title="Bottom left">◣</button>
+          <button data-pos="bc" class="pos" title="Bottom center">▼</button>
+          <button data-pos="br" class="pos" title="Bottom right">◢</button>
+        </div>
+      </div>
+
+      <div class="rp-section rp-inline">
+        <label class="field">
+          <span class="field-label">Text color</span>
+          <div class="swatch-row" id="text-color-row">
+            <button class="cswatch active" data-color="auto" style="--c:linear-gradient(135deg,#fff,#bbb)" title="Auto"></button>
+            <button class="cswatch" data-color="#ffffff" style="--c:#ffffff"></button>
+            <button class="cswatch" data-color="#111111" style="--c:#111111"></button>
+            <button class="cswatch" data-color="#f5d491" style="--c:#f5d491"></button>
+            <button class="cswatch" data-color="#7fe7d9" style="--c:#7fe7d9"></button>
+          </div>
+        </label>
+        <label class="field grow">
+          <span class="field-label">Font</span>
+          <select id="txt-font">
+            <option value="Fraunces">Fraunces · Serif</option>
+            <option value="Manrope">Manrope · Sans</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="rp-actions">
+        <button id="regen-btn" class="btn btn-ghost">↻ Restyle</button>
+        <button id="download-btn" class="btn btn-primary">
+          <span class="btn-primary-glow"></span>
+          <span class="label">Download PNG</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== LOADING ===================== -->
+  <div id="loader" class="loader" hidden>
+    <div class="loader-card">
+      <div class="loader-orb"><span></span><span></span><span></span></div>
+      <div class="loader-title" id="loader-title">Gathering the streets…</div>
+      <div class="loader-sub" id="loader-sub">Reading OpenStreetMap</div>
+      <div class="loader-bar"><i id="loader-bar-fill"></i></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJ0jr9ymm4jdrHNjr9ZzbBhWzYPh8=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
