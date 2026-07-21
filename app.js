@@ -815,7 +815,12 @@ function escapeHtml(s) {
 document.addEventListener('DOMContentLoaded', async () => {
   // make sure fonts are ready before any canvas text render
   if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (_) {} }
-  initMap();
-  buildThemeGrid();
-  bindUI();
+  // Guard each init step so one failure can't take down the rest of the UI.
+  if (typeof L === 'undefined') {
+    toast('Map library failed to load. Check your connection and reload.', true);
+  } else {
+    try { initMap(); } catch (e) { console.error(e); toast('Map failed to start.', true); }
+  }
+  try { buildThemeGrid(); } catch (e) { console.error(e); }
+  try { bindUI(); } catch (e) { console.error(e); }
 });
