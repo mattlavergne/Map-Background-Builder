@@ -16,44 +16,89 @@ const THEMES = {
     name: 'Midnight Gold',
     bg: ['#0a0e17', '#131b2e'],
     water: '#12203b', waterEdge: 'rgba(120,160,220,.18)',
-    green: '#152a2a', greenEdge: 'rgba(90,150,120,.0)',
+    green: '#152a2a',
     building: 'rgba(120,140,190,.10)', buildingEdge: 'rgba(150,175,230,.14)',
+    roof: '#2b3350', wall: '#171d2e',
     roads: ['#f6d18a', '#d9b06a', '#8f7a52', '#5f5540', '#4a4636'],
     glow: 0.5, text: '#f6ead0',
+  },
+  copper: {
+    name: 'Copper',
+    bg: ['#0b0906', '#1a130d'],
+    water: '#12181a', waterEdge: 'rgba(200,150,110,.16)',
+    green: '#1a1a10',
+    building: 'rgba(230,160,110,.08)', buildingEdge: 'rgba(240,180,130,.16)',
+    roof: '#3a281a', wall: '#1c130c',
+    roads: ['#ffbf8a', '#e08a4f', '#b3653c', '#7c472c', '#5a3420'],
+    glow: 0.6, text: '#ffe6cf',
+  },
+  rosegold: {
+    name: 'Rosé Gold',
+    bg: ['#0e0810', '#20121c'],
+    water: '#1b1222', waterEdge: 'rgba(230,180,200,.18)',
+    green: '#201826',
+    building: 'rgba(230,180,190,.08)', buildingEdge: 'rgba(240,200,200,.16)',
+    roof: '#3a2430', wall: '#1e131c',
+    roads: ['#f7cbc2', '#e6a091', '#c07d76', '#8a5a58', '#5e3e40'],
+    glow: 0.55, text: '#f9e3dc',
+  },
+  platinum: {
+    name: 'Platinum Noir',
+    bg: ['#070709', '#15171c'],
+    water: '#0f141d', waterEdge: 'rgba(200,215,235,.18)',
+    green: '#12161c',
+    building: 'rgba(210,220,235,.07)', buildingEdge: 'rgba(220,230,245,.20)',
+    roof: '#2a2f3a', wall: '#171b22',
+    roads: ['#ffffff', '#d6dce6', '#9aa3b1', '#606a78', '#454c58'],
+    glow: 0.5, text: '#eef2f8',
+  },
+  crimson: {
+    name: 'Crimson Noir',
+    bg: ['#0d0708', '#200d11'],
+    water: '#1a0e18', waterEdge: 'rgba(230,150,150,.16)',
+    green: '#1a1016',
+    building: 'rgba(230,140,130,.08)', buildingEdge: 'rgba(240,170,150,.16)',
+    roof: '#3a1820', wall: '#1e0d12',
+    roads: ['#ffd9a0', '#e86a6a', '#b74a52', '#7c3440', '#5a2833'],
+    glow: 0.7, text: '#ffe0d5',
+  },
+  emeraldgold: {
+    name: 'Emerald & Gold',
+    bg: ['#06120d', '#0d2018'],
+    water: '#0b2330', waterEdge: 'rgba(120,190,200,.16)',
+    green: '#0f3324',
+    building: 'rgba(180,200,150,.08)', buildingEdge: 'rgba(210,200,150,.16)',
+    roof: '#153a2a', wall: '#0c241a',
+    roads: ['#f6d99a', '#9fd6a0', '#6faf86', '#4c7a5e', '#39604a'],
+    glow: 0.5, text: '#eef3d8',
+  },
+  sapphire: {
+    name: 'Sapphire',
+    bg: ['#060a16', '#0c1732'],
+    water: '#0a1530', waterEdge: 'rgba(150,190,255,.22)',
+    green: '#0d2036',
+    building: 'rgba(150,190,255,.07)', buildingEdge: 'rgba(180,210,255,.18)',
+    roof: '#123056', wall: '#0a1f3e',
+    roads: ['#c7e0ff', '#7fb0ff', '#5f8fd8', '#48699f', '#39507a'],
+    glow: 0.6, text: '#e6f0ff',
   },
   noir: {
     name: 'Neon Noir',
     bg: ['#07060d', '#120a1f'],
     water: '#0e0b22', waterEdge: 'rgba(120,80,220,.22)',
-    green: '#0d1420', greenEdge: 'rgba(0,0,0,0)',
+    green: '#0d1420',
     building: 'rgba(120,60,200,.10)', buildingEdge: 'rgba(180,90,255,.16)',
+    roof: '#2a1840', wall: '#160b26',
     roads: ['#ff5cc8', '#c65cff', '#7d6cff', '#3f4c8f', '#2c3468'],
     glow: 1.15, text: '#ffd9f4',
-  },
-  blueprint: {
-    name: 'Blueprint',
-    bg: ['#0a2a4a', '#0d3a66'],
-    water: '#0c2f57', waterEdge: 'rgba(180,220,255,.28)',
-    green: '#0f3a5f', greenEdge: 'rgba(0,0,0,0)',
-    building: 'rgba(200,230,255,.06)', buildingEdge: 'rgba(200,230,255,.28)',
-    roads: ['#eaf6ff', '#bfe0ff', '#8fbde8', '#5f8fc0', '#4a78a8'],
-    glow: 0.35, text: '#eaf6ff',
-  },
-  ivory: {
-    name: 'Ivory Ink',
-    bg: ['#f4efe4', '#e9e1d1'],
-    water: '#cdd8d3', waterEdge: 'rgba(90,110,120,.25)',
-    green: '#dbe2c9', greenEdge: 'rgba(0,0,0,0)',
-    building: 'rgba(60,55,48,.07)', buildingEdge: 'rgba(60,55,48,.22)',
-    roads: ['#2a2622', '#4a443c', '#726a5e', '#9a9184', '#b3a99a'],
-    glow: 0.0, text: '#2a2622',
   },
   sunset: {
     name: 'Sunset',
     bg: ['#2a1230', '#5a1f3a', '#8a2f38'],
     water: '#3a1c46', waterEdge: 'rgba(255,180,150,.22)',
-    green: '#3a2340', greenEdge: 'rgba(0,0,0,0)',
+    green: '#3a2340',
     building: 'rgba(255,150,120,.09)', buildingEdge: 'rgba(255,180,140,.18)',
+    roof: '#512746', wall: '#301733',
     roads: ['#ffd9a0', '#ffb37c', '#ff8f6b', '#c76a68', '#8f4f5e'],
     glow: 0.7, text: '#ffe8cf',
   },
@@ -61,10 +106,41 @@ const THEMES = {
     name: 'Deep Forest',
     bg: ['#08160f', '#0f2a1c'],
     water: '#0c2536', waterEdge: 'rgba(120,190,220,.16)',
-    green: '#123524', greenEdge: 'rgba(0,0,0,0)',
+    green: '#123524',
     building: 'rgba(160,200,150,.08)', buildingEdge: 'rgba(180,220,170,.16)',
+    roof: '#193c2b', wall: '#0e251b',
     roads: ['#e9f0c9', '#c6d99a', '#93b06f', '#5f7a4a', '#4a6038'],
     glow: 0.45, text: '#eaf3d8',
+  },
+  blueprint: {
+    name: 'Blueprint',
+    bg: ['#0a2a4a', '#0d3a66'],
+    water: '#0c2f57', waterEdge: 'rgba(180,220,255,.28)',
+    green: '#0f3a5f',
+    building: 'rgba(200,230,255,.06)', buildingEdge: 'rgba(200,230,255,.28)',
+    roof: '#134066', wall: '#0b2c4e',
+    roads: ['#eaf6ff', '#bfe0ff', '#8fbde8', '#5f8fc0', '#4a78a8'],
+    glow: 0.35, text: '#eaf6ff',
+  },
+  ivory: {
+    name: 'Ivory Ink',
+    bg: ['#f4efe4', '#e9e1d1'],
+    water: '#cdd8d3', waterEdge: 'rgba(90,110,120,.25)',
+    green: '#dbe2c9',
+    building: 'rgba(60,55,48,.07)', buildingEdge: 'rgba(60,55,48,.22)',
+    roof: '#d9cdb6', wall: '#c0b298',
+    roads: ['#2a2622', '#4a443c', '#726a5e', '#9a9184', '#b3a99a'],
+    glow: 0.0, text: '#2a2622',
+  },
+  vintage: {
+    name: 'Vintage Atlas',
+    bg: ['#e9ddc2', '#dcc9a4'],
+    water: '#bcccc2', waterEdge: 'rgba(120,140,130,.25)',
+    green: '#d0d8ab',
+    building: 'rgba(95,72,45,.10)', buildingEdge: 'rgba(95,72,45,.28)',
+    roof: '#cdb994', wall: '#a68f6a',
+    roads: ['#3b2d1d', '#5c4831', '#7c6549', '#9c8669', '#b3a486'],
+    glow: 0.0, text: '#3b2d1d',
   },
 };
 
@@ -87,6 +163,7 @@ const state = {
   rect: null,          // leaflet rectangle layer
   bounds: null,        // leaflet LatLngBounds of selection
   theme: 'midnight',
+  effect: 'glow',      // 'glow' | '3d' | 'flat'
   data: null,          // parsed OSM elements for current render
   abort: null,         // AbortController for the in-flight fetch
   placeName: '',
@@ -153,9 +230,43 @@ function onDrawStart(e) {
   state.map.on('mousemove', onDrawMove);
   state.map.on('mouseup', onDrawEnd);
 }
+/* aspect ratio (w/h) of the selected output resolution */
+function outputAspect() {
+  const [w, h] = $('#opt-res').value.split('x').map(Number);
+  return w / h;
+}
+
 function onDrawMove(e) {
   if (!drawStartLatLng) return;
-  state.rect.setBounds(L.latLngBounds(drawStartLatLng, e.latlng));
+  // Lock the box to the wallpaper's aspect ratio so what you draw is exactly
+  // what you get (no crop). Work in container pixels (linear in Web Mercator).
+  const asp = outputAspect();
+  const p0 = state.map.latLngToContainerPoint(drawStartLatLng);
+  const p1 = state.map.latLngToContainerPoint(e.latlng);
+  const sx = p1.x < p0.x ? -1 : 1, sy = p1.y < p0.y ? -1 : 1;
+  let w = Math.abs(p1.x - p0.x), h = Math.abs(p1.y - p0.y);
+  if (w / h > asp) h = w / asp; else w = h * asp;   // grow to contain the drag
+  const corner = state.map.containerPointToLatLng(L.point(p0.x + sx * w, p0.y + sy * h));
+  state.rect.setBounds(L.latLngBounds(drawStartLatLng, corner));
+}
+
+/* Reshape the existing selection around its center to a new aspect ratio
+   (used when the resolution changes after a box is drawn). */
+function reshapeSelection() {
+  if (!state.bounds || !state.rect) return;
+  const map = state.map, asp = outputAspect();
+  const c = map.latLngToContainerPoint(state.bounds.getCenter());
+  const nw = map.latLngToContainerPoint(state.bounds.getNorthWest());
+  const se = map.latLngToContainerPoint(state.bounds.getSouthEast());
+  let w = Math.abs(se.x - nw.x), h = Math.abs(se.y - nw.y);
+  if (w / h > asp) h = w / asp; else w = h * asp;
+  const nb = L.latLngBounds(
+    map.containerPointToLatLng(L.point(c.x - w / 2, c.y - h / 2)),
+    map.containerPointToLatLng(L.point(c.x + w / 2, c.y + h / 2))
+  );
+  state.bounds = nb;
+  state.rect.setBounds(nb);
+  updateBadge();
 }
 function onDrawEnd() {
   state.map.off('mousemove', onDrawMove);
@@ -500,13 +611,17 @@ function render() {
 
   // --- buildings ---
   if (d.buildings.length) {
-    ctx.fillStyle = theme.building;
-    ctx.strokeStyle = theme.buildingEdge;
-    ctx.lineWidth = Math.max(0.4, 0.5 * lineScale);
-    for (const geom of d.buildings) {
-      fillPoly(ctx, geom, S, true);
+    if (state.effect === '3d') {
+      drawBuildings3D(ctx, d.buildings, S, theme, lineScale);
+    } else {
+      ctx.fillStyle = theme.building;
+      ctx.strokeStyle = theme.buildingEdge;
+      ctx.lineWidth = Math.max(0.4, 0.5 * lineScale);
+      for (const geom of d.buildings) fillPoly(ctx, geom, S, true);
     }
   }
+
+  const glowOn = state.effect !== 'flat';
 
   // --- roads: minor first so majors sit on top ---
   for (let tier = 4; tier >= 0; tier--) {
@@ -514,7 +629,7 @@ function render() {
     if (!segs.length) continue;
     const width = TIER_WIDTH[tier] * lineScale;
     // glow pass
-    if (theme.glow > 0 && tier <= 2) {
+    if (glowOn && theme.glow > 0 && tier <= 2) {
       ctx.save();
       ctx.strokeStyle = theme.roads[tier];
       ctx.globalAlpha = 0.5 * theme.glow;
@@ -536,6 +651,58 @@ function render() {
 
   // --- text overlay ---
   drawText(ctx, w, h, theme);
+}
+
+/* stable pseudo-random in [0,1) from a number (so re-renders are identical) */
+function hash01(x) {
+  const s = Math.sin(x * 12.9898) * 43758.5453;
+  return s - Math.floor(s);
+}
+
+/* Extruded "3D" buildings: each footprint gets varied height, shaded walls
+   and a lighter roof, drawn back-to-front for a believable little skyline. */
+function drawBuildings3D(ctx, buildings, S, theme, lineScale) {
+  const base = 7 * lineScale;                 // base extrusion height (px)
+  const dirX = 0.55;                          // light/extrusion direction
+  const polys = [];
+  for (const g of buildings) {
+    if (g.length < 3) continue;
+    const pts = g.map((p) => S(p.lat, p.lon));
+    let cx = 0, cy = 0;
+    for (const p of pts) { cx += p[0]; cy += p[1]; }
+    cx /= pts.length; cy /= pts.length;
+    const mag = base * (0.5 + 1.4 * hash01(cx * 0.13 + cy * 0.07));
+    polys.push({ pts, cy, ex: mag * dirX, ey: -mag });
+  }
+  // draw far (top of image) first so nearer buildings overlap correctly
+  polys.sort((a, b) => a.cy - b.cy);
+
+  for (const { pts, ex, ey } of polys) {
+    // walls
+    ctx.fillStyle = theme.wall;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1];
+      ctx.beginPath();
+      ctx.moveTo(a[0], a[1]);
+      ctx.lineTo(b[0], b[1]);
+      ctx.lineTo(b[0] + ex, b[1] + ey);
+      ctx.lineTo(a[0] + ex, a[1] + ey);
+      ctx.closePath();
+      ctx.fill();
+    }
+    // roof
+    ctx.fillStyle = theme.roof;
+    ctx.beginPath();
+    for (let i = 0; i < pts.length; i++) {
+      const x = pts[i][0] + ex, y = pts[i][1] + ey;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = theme.buildingEdge;
+    ctx.lineWidth = Math.max(0.4, 0.5 * lineScale);
+    ctx.stroke();
+  }
 }
 
 function paintBackground(ctx, w, h, theme) {
@@ -789,8 +956,16 @@ function bindUI() {
     };
   });
 
-  // re-render on resolution change if result open
-  $('#opt-res').onchange = () => { if (!$('#result').hidden && state.data) render(); };
+  // re-render on resolution change; also reshape the box to the new ratio
+  $('#opt-res').onchange = () => {
+    reshapeSelection();
+    if (!$('#result').hidden && state.data) render();
+  };
+  // depth / effect
+  $('#opt-effect').onchange = (e) => {
+    state.effect = e.target.value;
+    if (!$('#result').hidden && state.data) render();
+  };
 
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !$('#result').hidden) closeResult();

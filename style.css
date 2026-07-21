@@ -255,6 +255,7 @@ button { font-family: inherit; cursor: pointer; }
 
 .rp-section { display: flex; flex-direction: column; gap: 12px; }
 .rp-inline { flex-direction: row; gap: 14px; }
+.field-row { display: flex; gap: 12px; }
 
 .pos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
 .pos {
