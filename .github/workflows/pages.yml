@@ -4,7 +4,7 @@ name: Deploy to GitHub Pages
 # Settings → Pages → Build and deployment → Source: "GitHub Actions".
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, claude/map-artwork-background-gen-rf0dwj]
   workflow_dispatch:
 
 permissions:
