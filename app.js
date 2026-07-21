@@ -299,7 +299,7 @@ async function fetchOSM(query, onProgress, signal) {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'data=' + encodeURIComponent(query),
-      }, 18000, signal);
+      }, 12000, signal);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       onProgress && onProgress(0.55, 'Downloading streets & water…');
       const json = await res.json();
