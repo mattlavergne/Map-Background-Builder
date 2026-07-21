@@ -299,7 +299,7 @@ async function fetchOSM(query, onProgress, signal) {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'data=' + encodeURIComponent(query),
-      }, 25000, signal);
+      }, 18000, signal);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       onProgress && onProgress(0.55, 'Downloading streets & water…');
       const json = await res.json();
@@ -332,6 +332,11 @@ async function generate() {
   state.abort = new AbortController();
   showLoader(true);
   setLoader(0.05, 'Gathering the streets…', 'Reading OpenStreetMap');
+
+  // Hard watchdog: whatever happens, never spin forever.
+  const watchdog = setTimeout(() => {
+    if (state.abort) state.abort.abort();
+  }, 75000);
 
   try {
     // Fetch a little beyond the drawn box so the cover-crop always has data.
@@ -369,6 +374,7 @@ async function generate() {
       toast('Could not reach the map servers — they may be busy, or the area is too large. Try a smaller box or retry in a moment.', true);
     }
   } finally {
+    clearTimeout(watchdog);
     state.abort = null;
     showLoader(false);
   }
@@ -406,7 +412,7 @@ async function ensurePlaceName() {
   try {
     const c = state.bounds.getCenter();
     const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${c.lat}&lon=${c.lng}&zoom=12`;
-    const res = await fetch(url, { headers: { 'Accept-Language': navigator.language || 'en' } });
+    const res = await fetchWithTimeout(url, { headers: { 'Accept-Language': navigator.language || 'en' } }, 8000);
     const j = await res.json();
     const a = j.address || {};
     state.placeName = a.city || a.town || a.village || a.suburb || a.county || a.state || (j.name || '');
@@ -782,7 +788,22 @@ function bindUI() {
 /* ==================================================================
    LOADER / TOAST HELPERS
 ================================================================== */
-function showLoader(on) { $('#loader').hidden = !on; if (on) setLoader(0.05); }
+let loaderTimer = null, loaderStart = 0;
+function showLoader(on) {
+  $('#loader').hidden = !on;
+  clearInterval(loaderTimer);
+  if (on) {
+    setLoader(0.05);
+    loaderStart = Date.now();
+    const el = $('#loader-elapsed');
+    if (el) {
+      el.textContent = '0s';
+      loaderTimer = setInterval(() => {
+        el.textContent = Math.round((Date.now() - loaderStart) / 1000) + 's';
+      }, 500);
+    }
+  }
+}
 function setLoader(p, title, sub) {
   $('#loader-bar-fill').style.width = Math.round(p * 100) + '%';
   if (title !== undefined) $('#loader-title').textContent = title;
