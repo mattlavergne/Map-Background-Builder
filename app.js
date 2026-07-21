@@ -19,7 +19,7 @@ const THEMES = {
     green: '#152a2a',
     building: 'rgba(120,140,190,.10)', buildingEdge: 'rgba(150,175,230,.14)',
     roof: '#2b3350', wall: '#171d2e',
-    roads: ['#f6d18a', '#d9b06a', '#8f7a52', '#5f5540', '#4a4636'],
+    roads: ['#f6d18a', '#ecc47c', '#dcb46e', '#cba564', '#bb975c'],
     glow: 0.5, text: '#f6ead0',
   },
   copper: {
@@ -29,7 +29,7 @@ const THEMES = {
     green: '#1a1a10',
     building: 'rgba(230,160,110,.08)', buildingEdge: 'rgba(240,180,130,.16)',
     roof: '#3a281a', wall: '#1c130c',
-    roads: ['#ffbf8a', '#e08a4f', '#b3653c', '#7c472c', '#5a3420'],
+    roads: ['#ffbf8a', '#f4aa72', '#e2945c', '#d0824c', '#bf7340'],
     glow: 0.6, text: '#ffe6cf',
   },
   rosegold: {
@@ -39,7 +39,7 @@ const THEMES = {
     green: '#201826',
     building: 'rgba(230,180,190,.08)', buildingEdge: 'rgba(240,200,200,.16)',
     roof: '#3a2430', wall: '#1e131c',
-    roads: ['#f7cbc2', '#e6a091', '#c07d76', '#8a5a58', '#5e3e40'],
+    roads: ['#f7cbc2', '#eeb4a9', '#e2a094', '#d48d82', '#c67d73'],
     glow: 0.55, text: '#f9e3dc',
   },
   platinum: {
@@ -49,7 +49,7 @@ const THEMES = {
     green: '#12161c',
     building: 'rgba(210,220,235,.07)', buildingEdge: 'rgba(220,230,245,.20)',
     roof: '#2a2f3a', wall: '#171b22',
-    roads: ['#ffffff', '#d6dce6', '#9aa3b1', '#606a78', '#454c58'],
+    roads: ['#ffffff', '#e9edf3', '#d2d9e2', '#bcc4d0', '#a4adba'],
     glow: 0.5, text: '#eef2f8',
   },
   crimson: {
@@ -59,7 +59,7 @@ const THEMES = {
     green: '#1a1016',
     building: 'rgba(230,140,130,.08)', buildingEdge: 'rgba(240,170,150,.16)',
     roof: '#3a1820', wall: '#1e0d12',
-    roads: ['#ffd9a0', '#e86a6a', '#b74a52', '#7c3440', '#5a2833'],
+    roads: ['#ffd9a0', '#f2907e', '#e8746e', '#d86068', '#c8535d'],
     glow: 0.7, text: '#ffe0d5',
   },
   emeraldgold: {
@@ -69,7 +69,7 @@ const THEMES = {
     green: '#0f3324',
     building: 'rgba(180,200,150,.08)', buildingEdge: 'rgba(210,200,150,.16)',
     roof: '#153a2a', wall: '#0c241a',
-    roads: ['#f6d99a', '#9fd6a0', '#6faf86', '#4c7a5e', '#39604a'],
+    roads: ['#f6d99a', '#bfe0a0', '#a2d290', '#88c17e', '#72b06f'],
     glow: 0.5, text: '#eef3d8',
   },
   sapphire: {
@@ -79,7 +79,7 @@ const THEMES = {
     green: '#0d2036',
     building: 'rgba(150,190,255,.07)', buildingEdge: 'rgba(180,210,255,.18)',
     roof: '#123056', wall: '#0a1f3e',
-    roads: ['#c7e0ff', '#7fb0ff', '#5f8fd8', '#48699f', '#39507a'],
+    roads: ['#d7ebff', '#a8ccff', '#8fb8f5', '#7aa4e8', '#6892d8'],
     glow: 0.6, text: '#e6f0ff',
   },
   noir: {
@@ -89,7 +89,7 @@ const THEMES = {
     green: '#0d1420',
     building: 'rgba(120,60,200,.10)', buildingEdge: 'rgba(180,90,255,.16)',
     roof: '#2a1840', wall: '#160b26',
-    roads: ['#ff5cc8', '#c65cff', '#7d6cff', '#3f4c8f', '#2c3468'],
+    roads: ['#ff5cc8', '#e666e0', '#cc74ff', '#ab82ff', '#948dff'],
     glow: 1.15, text: '#ffd9f4',
   },
   sunset: {
@@ -99,7 +99,7 @@ const THEMES = {
     green: '#3a2340',
     building: 'rgba(255,150,120,.09)', buildingEdge: 'rgba(255,180,140,.18)',
     roof: '#512746', wall: '#301733',
-    roads: ['#ffd9a0', '#ffb37c', '#ff8f6b', '#c76a68', '#8f4f5e'],
+    roads: ['#ffd9a0', '#ffc088', '#ffab7a', '#f5926f', '#e17e6a'],
     glow: 0.7, text: '#ffe8cf',
   },
   forest: {
@@ -109,7 +109,7 @@ const THEMES = {
     green: '#123524',
     building: 'rgba(160,200,150,.08)', buildingEdge: 'rgba(180,220,170,.16)',
     roof: '#193c2b', wall: '#0e251b',
-    roads: ['#e9f0c9', '#c6d99a', '#93b06f', '#5f7a4a', '#4a6038'],
+    roads: ['#e9f0c9', '#d2e0a8', '#bccf90', '#a7bf7a', '#94b06f'],
     glow: 0.45, text: '#eaf3d8',
   },
   blueprint: {
@@ -119,7 +119,7 @@ const THEMES = {
     green: '#0f3a5f',
     building: 'rgba(200,230,255,.06)', buildingEdge: 'rgba(200,230,255,.28)',
     roof: '#134066', wall: '#0b2c4e',
-    roads: ['#eaf6ff', '#bfe0ff', '#8fbde8', '#5f8fc0', '#4a78a8'],
+    roads: ['#eaf6ff', '#cfe6ff', '#b6d8f6', '#9fcaee', '#8bbde8'],
     glow: 0.35, text: '#eaf6ff',
   },
   ivory: {
@@ -129,7 +129,7 @@ const THEMES = {
     green: '#dbe2c9',
     building: 'rgba(60,55,48,.07)', buildingEdge: 'rgba(60,55,48,.22)',
     roof: '#d9cdb6', wall: '#c0b298',
-    roads: ['#241f1a', '#3d372e', '#5a5247', '#736a5d', '#8a8072'],
+    roads: ['#231e19', '#312b24', '#3f3830', '#4d453c', '#5c5248'],
     glow: 0.0, text: '#2a2622',
   },
   vintage: {
@@ -139,7 +139,7 @@ const THEMES = {
     green: '#d0d8ab',
     building: 'rgba(95,72,45,.10)', buildingEdge: 'rgba(95,72,45,.28)',
     roof: '#cdb994', wall: '#a68f6a',
-    roads: ['#3b2d1d', '#5c4831', '#7c6549', '#9c8669', '#b3a486'],
+    roads: ['#3b2d1d', '#493829', '#584634', '#665440', '#75634c'],
     glow: 0.0, text: '#3b2d1d',
   },
 };
