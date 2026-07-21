@@ -20,6 +20,10 @@
 }
 
 * { box-sizing: border-box; }
+/* The `hidden` attribute must always win. Author `display` rules (e.g.
+   .loader{display:grid}) otherwise override the UA [hidden]{display:none},
+   which left full-screen overlays permanently covering the app. */
+[hidden] { display: none !important; }
 html, body { height: 100%; margin: 0; }
 body {
   font-family: 'Manrope', system-ui, -apple-system, sans-serif;
