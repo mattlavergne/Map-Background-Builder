@@ -183,15 +183,30 @@ function dbg(msg) { try { console.log('[cartogram] ' + msg); } catch (_) {} }
 /* ==================================================================
    MAP SETUP
 ================================================================== */
+// The basemap is only the picker you frame your selection on — the artwork
+// itself is drawn from Overpass data, not from these tiles.
+// Default: keyless OpenStreetMap tiles, darkened in CSS (.basemap-dark).
+// Optional: paste a free CARTO key (https://carto.com/basemaps/apikey) to use
+// CARTO's native "Dark Matter" tiles instead.
+const CARTO_KEY = '';
+
 function initMap() {
   const map = L.map('map', { zoomControl: true, attributionControl: true, worldCopyJump: true })
     .setView([40.758, -73.9855], 13); // Times Square-ish
 
   // Dark, low-key basemap so the selection UI feels like part of the app.
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
-    subdomains: 'abcd', maxZoom: 20,
-  }).addTo(map);
+  const osmCredit = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+  if (CARTO_KEY) {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=' + encodeURIComponent(CARTO_KEY), {
+      attribution: osmCredit + ' &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd', maxZoom: 20,
+    }).addTo(map);
+  } else {
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: osmCredit,
+      maxZoom: 19, className: 'basemap-dark',
+    }).addTo(map);
+  }
 
   map.zoomControl.setPosition('topright');
   state.map = map;

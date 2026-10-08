@@ -61,7 +61,12 @@ site is plain static files.)
 ## 📜 Attribution
 
 Map data © [OpenStreetMap](https://www.openstreetmap.org/copyright)
-contributors. Geocoding by [Nominatim](https://nominatim.org). Basemap tiles by
-[CARTO](https://carto.com). Please respect the
-[Overpass](https://wiki.openstreetmap.org/wiki/Overpass_API) and Nominatim
-usage policies (this app makes light, on‑demand requests).
+contributors. Geocoding by [Nominatim](https://nominatim.org). The selection
+map uses the standard [OpenStreetMap tiles](https://operations.osmfoundation.org/policies/tiles/),
+darkened with a CSS filter. Please respect the
+[Overpass](https://wiki.openstreetmap.org/wiki/Overpass_API), Nominatim and
+OSM tile usage policies (this app makes light, on‑demand requests).
+
+Prefer CARTO's native “Dark Matter” look? CARTO now requires a (free) key:
+request one at [carto.com/basemaps/apikey](https://carto.com/basemaps/apikey)
+and paste it into `CARTO_KEY` near the top of the map setup in `app.js`.
