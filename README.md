@@ -1,45 +1,49 @@
-# 🗺️ Cartogram — Map Artwork Background Builder
+# 🗺️ Cartogram — Map Wallpaper Builder
 
-Draw a box on a map and turn **any place on Earth** into a stunning, artistic
-desktop (or phone) wallpaper. Not a screenshot — a piece of generative artwork
-that keeps the real roads, water, parks and buildings of the place you chose,
-rendered in a hand‑tuned palette with glow, depth and typography.
+Frame **any place on Earth**, pick a style, and download it as a crisp,
+full‑resolution desktop or phone wallpaper. The map you see *is* the preview:
+what's inside the frame is exactly what you get, just rendered at 4K.
 
-**100% client‑side.** No backend, no API keys, no build step. It runs entirely
+**100% client‑side, no API keys.** No backend, no build step. It runs entirely
 in the browser and is hosted for free on GitHub Pages.
 
 ![Cartogram](docs/preview.png)
 
 ## ✨ Features
 
-- **Draw‑to‑select** — search a place, then drag a box to frame your scene.
-- **Real map data** — streets, rivers, coastlines, parks and buildings are
-  pulled live from [OpenStreetMap](https://www.openstreetmap.org) via the
-  Overpass API.
-- **6 curated art styles** — Midnight Gold, Neon Noir, Blueprint, Ivory Ink,
-  Sunset and Deep Forest, each with road glow, water gradients and film grain
-  for a premium, non‑flat finish.
-- **Wallpaper resolutions** — Full HD, 2K, 4K and phone (portrait) presets.
-- **Add text** — an auto‑detected city name plus coordinates, with 9 placement
-  options, two fonts, and colour choices. Everything re‑renders live.
+- **Live, detailed OpenStreetMap** — streets, names, transit, parks, water and
+  building footprints, from free vector tiles by [OpenFreeMap](https://openfreemap.org).
+- **17 styles in two families**
+  - *Detailed* (Street, Night, Paper, Fiord) — full map look with labels, POIs
+    and road casings.
+  - *Artistic* (Midnight, Copper, Rosé Gold, Platinum, Crimson, Emerald,
+    Sapphire, Neon, Sunset, Forest, Blueprint, Toner, Ivory, Vintage) — clean
+    line‑work with glow, gradients and a soft vignette.
+- **Labels: Off / Places / All**, a **Buildings** switch, and **3D tilt** with
+  real extruded buildings (zoom in close; right‑drag to rotate).
+- **Wallpaper sizes** — your own screen (auto‑detected), 1080p, 1440p, 4K,
+  MacBook 16:10, ultrawide, iPhone and Android. The frame on the map locks to
+  the chosen shape.
+- **Optional title** — corner, bottom or centered, serif or sans, with the
+  place name and coordinates filled in for you.
 - **One‑click PNG download** at full resolution.
 
 ## 🚀 How it works
 
-1. A dark [Leaflet](https://leafletjs.com) map lets you find and frame an area.
-2. On **Generate**, the drawn bounding box is sent to the **Overpass API**,
-   which returns the raw vector geometry (roads by class, water bodies,
-   waterways, parks, buildings) for that box.
-3. Those vectors are projected (Web Mercator) and painted onto an HTML
-   `<canvas>` with a completely custom artistic style — layered fills,
-   multi‑pass road glow, vignette and grain — then framed to cover your chosen
-   resolution.
-4. Text is drawn as a final overlay, and the canvas is exported as a PNG.
+1. [MapLibre GL JS](https://maplibre.org) draws OpenFreeMap's vector tiles
+   (OpenStreetMap data in the [OpenMapTiles](https://openmaptiles.org) schema).
+2. Every style is generated in `app.js` from one base style — a vendored
+   snapshot of OpenFreeMap's *Liberty* (`vendor/styles/liberty.json`) —
+   recoloured layer by layer from a small palette.
+3. On **Download**, the framed view is re‑rendered off‑screen at the target
+   resolution (same centre, zoom, rotation and tilt, higher pixel ratio), then
+   composited with the background gradient, title and attribution, and saved as
+   a PNG.
 
 ## 🧑‍💻 Run locally
 
-No dependencies. Just serve the folder (a static server is needed so the
-browser will make the Overpass/Nominatim requests):
+No dependencies. Serve the folder with any static server (ES modules and the
+map tiles need `http://`, not `file://`):
 
 ```bash
 python3 -m http.server 8000
@@ -48,25 +52,22 @@ python3 -m http.server 8000
 
 ## 🌐 Deploy on GitHub Pages
 
-This repo ships a workflow at `.github/workflows/pages.yml`.
+This repo ships a workflow at `.github/workflows/pages.yml` that publishes the
+site on every push to the default branch (or `main`/`master`).
 
-1. Push to `main`.
-2. In the repo, go to **Settings → Pages → Build and deployment** and set
+1. In the repo, go to **Settings → Pages → Build and deployment** and set
    **Source** to **GitHub Actions**.
-3. The site publishes automatically on every push to `main`.
-
-(You can also use **Deploy from a branch** and point it at the repo root — the
-site is plain static files.)
+2. Push — the site publishes automatically.
 
 ## 📜 Attribution
 
 Map data © [OpenStreetMap](https://www.openstreetmap.org/copyright)
-contributors. Geocoding by [Nominatim](https://nominatim.org). The selection
-map uses the standard [OpenStreetMap tiles](https://operations.osmfoundation.org/policies/tiles/),
-darkened with a CSS filter. Please respect the
-[Overpass](https://wiki.openstreetmap.org/wiki/Overpass_API), Nominatim and
-OSM tile usage policies (this app makes light, on‑demand requests).
+contributors. Tiles by [OpenFreeMap](https://openfreemap.org) ·
+© [OpenMapTiles](https://openmaptiles.org). Geocoding by
+[Nominatim](https://nominatim.org). Exported wallpapers carry a small credit
+line in the corner, as the tile and data licences require. Please respect the
+[Nominatim usage policy](https://operations.osmfoundation.org/policies/nominatim/)
+(this app makes light, on‑demand requests).
 
-Prefer CARTO's native “Dark Matter” look? CARTO now requires a (free) key:
-request one at [carto.com/basemaps/apikey](https://carto.com/basemaps/apikey)
-and paste it into `CARTO_KEY` near the top of the map setup in `app.js`.
+[MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js) is vendored under
+its BSD‑3‑Clause licence (`vendor/maplibre/LICENSE.txt`).
