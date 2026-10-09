@@ -5,6 +5,12 @@
    wallpaper. 100% client-side.
    ========================================================= */
 import * as maplibregl from './vendor/maplibre/maplibre-gl.mjs';
+import { createGeocoder } from './geocoding.js';
+import { bindLocationSearch } from './location-search.js';
+
+let geocodingStorage;
+try { geocodingStorage = window.localStorage; } catch (_) { /* private mode */ }
+const geocoder = createGeocoder({ storage: geocodingStorage, language: navigator.language || 'en' });
 
 /* ------------------------------------------------------------------
    THEMES
@@ -638,11 +644,11 @@ async function ensurePlaceName() {
   if (state.placeName) return;
   try {
     const c = state.map.getCenter();
-    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${c.lat}&lon=${c.lng}&zoom=12`;
-    const res = await fetch(url, { headers: { 'Accept-Language': navigator.language || 'en' } });
-    const j = await res.json();
-    const a = j.address || {};
-    state.placeName = a.city || a.town || a.village || a.suburb || a.county || a.state || (j.name || '');
+    const [place] = await geocoder.reverse(c);
+    // Ignore a response for a view the user has already moved away from.
+    const current = state.map.getCenter();
+    if (!state.placeName && current.lat === c.lat && current.lng === c.lng)
+      state.placeName = place?.locality || place?.name || '';
   } catch (_) { /* offline etc. */ }
 }
 
@@ -662,36 +668,11 @@ async function setTextPos(pos) {
 }
 
 /* ==================================================================
-   SEARCH (Nominatim geocoding)
+   SEARCH (explicit Photon search and selection)
 ================================================================== */
-let searchTimer = null;
-function onSearchInput() {
-  const q = $('#search-input').value.trim();
-  clearTimeout(searchTimer);
-  if (q.length < 3) { $('#search-results').hidden = true; return; }
-  searchTimer = setTimeout(() => runSearch(q), 350);
-}
-async function runSearch(q) {
-  try {
-    const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&q=${encodeURIComponent(q)}`;
-    const res = await fetch(url, { headers: { 'Accept-Language': navigator.language || 'en' } });
-    const list = await res.json();
-    const ul = $('#search-results');
-    ul.innerHTML = '';
-    if (!list.length) { ul.hidden = true; return; }
-    list.forEach((r) => {
-      const li = document.createElement('li');
-      const main = r.display_name.split(',')[0];
-      li.innerHTML = `<b>${escapeHtml(main)}</b><br>${escapeHtml(r.display_name.slice(main.length + 2))}`;
-      li.onclick = () => selectSearch(r);
-      ul.appendChild(li);
-    });
-    ul.hidden = false;
-  } catch (_) { /* offline etc. */ }
-}
 function selectSearch(r) {
   $('#search-results').hidden = true;
-  const name = r.display_name.split(',')[0];
+  const name = r.name;
   $('#search-input').value = name;
   state.placeName = name;
   state.text.title = name;
@@ -874,10 +855,13 @@ function setSize(v) {
 }
 
 function bindUI() {
-  $('#search-input').oninput = onSearchInput;
-  $('#search-form').onsubmit = (e) => { e.preventDefault(); const q = $('#search-input').value.trim(); if (q) runSearch(q); };
+  const dismissSearch = bindLocationSearch({
+    form: $('#search-form'), input: $('#search-input'),
+    results: $('#search-results'), status: $('#search-status'),
+    geocoder, onSelect: selectSearch,
+  });
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search')) $('#search-results').hidden = true;
+    if (!e.target.closest('.search')) dismissSearch();
   });
 
   bindSeg('#seg-labels', (v) => { state.labels = v; setSeg('#seg-labels', v); applyStyle(); });
